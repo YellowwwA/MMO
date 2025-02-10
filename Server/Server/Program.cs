@@ -17,20 +17,26 @@ namespace Server.Game
     class Program
 	{
 		static Listener _listener = new Listener();
+		static List<System.Timers.Timer> _timers = new List<System.Timers.Timer>();
 
-		static void FlushRoom()
-		{
-			JobTimer.Instance.Push(FlushRoom, 250);
-		}
+		static void TickRoom(GameRoom room, int tick = 100) //TickRoom을 이용해 일 분배가 가능해짐(전에는 메인 스레드만 계속 돌리는데 TickRoom을 사용하여 다른스레드들에도 일 배정)
+        {
+			var timer = new System.Timers.Timer();
+			timer.Interval = tick; //실행주기 설정 tick ms 마다 실행
+			timer.Elapsed += ((s, e) => { room.Update(); }); //초가 다되면 이 함수를 실행해주겠다.
+			timer.AutoReset = true; // 매번 초기화
+			timer.Enabled = true;
 
+			_timers.Add(timer);
+        }
 		static void Main(string[] args)
 		{
 			ConfigManager.LoadConfig();
 			DataManager.LoadData();
+			//var d = DataManager.StatDict;
 
-			var d = DataManager.StatDict;
-
-			RoomManager.Instance.Add(1);
+			GameRoom room = RoomManager.Instance.Add(1);
+			TickRoom(room, 50); //50ms마다 실행
 
 			// DNS (Domain Name System)
 			string host = Dns.GetHostName();
@@ -47,8 +53,7 @@ namespace Server.Game
 			while (true)
 			{
 				//JobTimer.Instance.Flush();
-				RoomManager.Instance.Find(1).Update();
-				//Thread.Sleep(100);
+				Thread.Sleep(100);
 			}
 		}
 	}

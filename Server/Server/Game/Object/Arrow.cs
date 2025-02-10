@@ -43,7 +43,7 @@ namespace Server.Game
                     target.OnDamaged(this, Data.damage + Owner.Stat.Attack);
                 }
                 //화살 소멸
-                Room.LeaveGame(Id);
+                Room.Push(Room.LeaveGame,Id);
             }
         }
     }

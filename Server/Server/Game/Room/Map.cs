@@ -93,6 +93,11 @@ namespace Server.Game
 
         public bool ApplyLeave(GameObject gameObject)
         {
+            if (gameObject.Room == null)
+                return false;
+            if (gameObject.Room.Map != this)
+                return false;
+
             PositionInfo posInfo = gameObject.PosInfo;
 
             if (posInfo.PosX < MinX || posInfo.PosX > MaxX)
@@ -113,17 +118,16 @@ namespace Server.Game
         {
             ApplyLeave(gameObject);
 
+            if (gameObject.Room == null)
+                return false;
+            if (gameObject.Room.Map != this)
+                return false;
+
             PositionInfo posInfo = gameObject.Info.PosInfo;
 
             if (CanGo(dest, true) == false)
                 return false;
 
-            {   //실제 현재 위치
-                int x = posInfo.PosX - MinX;
-                int y = MaxY - posInfo.PosY;
-                if (_objects[y, x] == gameObject)
-                    _objects[y, x] = null;
-            }
             {   //요청 위치
                 int x = dest.x - MinX;
                 int y = MaxY - dest.y;
