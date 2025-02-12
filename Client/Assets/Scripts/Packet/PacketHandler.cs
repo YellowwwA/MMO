@@ -99,4 +99,54 @@ class PacketHandler
 			cc.OnDead();
         }
 	}
+	public static void S_ConnectedHandler(PacketSession session, IMessage packet)
+	{
+		Debug.Log("S_ConnectedHandler");
+		C_Login loginPacket = new C_Login(); //로그인 하고싶다고 서버에 답변
+		loginPacket.UniqueId = SystemInfo.deviceUniqueIdentifier; // deviceUniqueIdentifier 유니티기능 -> 유니크한 식별자 뱉어줌
+		Managers.Network.Send(loginPacket);
+	}
+
+	// 로그인 OK + 캐릭터 목록
+	public static void S_LoginHandler(PacketSession session, IMessage packet)
+	{
+		S_Login loginPacket = (S_Login)packet;
+		Debug.Log($"LoginOk({loginPacket.LoginOk})");
+
+        //TODO : 로비 UI에서 캐릭터 보여주고, 선택할 수 있도록 함
+        if (loginPacket.Players == null || loginPacket.Players.Count == 0) //플레이어가 없다면
+		{
+			//플레이어 생성
+			C_CreatePlayer createPacket = new C_CreatePlayer(); 
+			createPacket.Name = $"Player_{Random.Range(0, 10000).ToString("0000")}"; // 0001, 0002 등 랜덤으로 이름 설정
+			Managers.Network.Send(createPacket);
+
+        }
+        else //기존에 생성한 플레이어가 있음
+        {
+			//무조건 첫번째 캐릭터로 로그인
+			LobbyPlayerInfo info = loginPacket.Players[0];
+			C_EnterGame enterGamePacket = new C_EnterGame(); 
+			enterGamePacket.Name = info.Name;
+			Managers.Network.Send(enterGamePacket); //로그인할거라고 패킷 보냄
+		}
+	}
+	public static void S_CreatePlayerHandler(PacketSession session, IMessage packet)
+	{
+		S_CreatePlayer createOkPacket = (S_CreatePlayer)packet;
+
+		if(createOkPacket.Player == null) //생성된 플레이어가 없다면
+        {
+			//다시 플레이어 생성
+			C_CreatePlayer createPacket = new C_CreatePlayer();
+			createPacket.Name = $"Player_{Random.Range(0, 10000).ToString("0000")}"; // 0001, 0002 등 랜덤으로 이름 설정
+			Managers.Network.Send(createPacket);
+		}
+        else
+        {
+			C_EnterGame enterGamePacket = new C_EnterGame();
+			enterGamePacket.Name = createOkPacket.Player.Name; //방금 받아온 패킷의 이름으로 설정
+			Managers.Network.Send(enterGamePacket); //로그인할거라고 패킷 보냄
+		}
+	}
 }
