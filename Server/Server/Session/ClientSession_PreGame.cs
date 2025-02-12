@@ -68,7 +68,9 @@ namespace Server
 				{   //새로운 아이디 생성
 					AccountDb newAccount = new AccountDb() { AccountName = loginPacket.UniqueId };
 					db.Accounts.Add(newAccount);
-					db.SaveChanges(); //만든 아이디 db에 저장
+					bool success = db.SaveChangesEx(); //만든 아이디 db에 저장
+					if (success == false)
+						return;
 
 					//AccountDbId 메모리에 기억
 					AccountDbId = newAccount.AccountDbId;
@@ -149,7 +151,9 @@ namespace Server
 					};
 
 					db.Players.Add(newPlayerDb);
-					db.SaveChanges(); // TODO: ExceptionHandling
+					bool success = db.SaveChangesEx(); // TODO: ExceptionHandling
+					if (success == false)
+						return;
 
 					//메모리에 추가
 					LobbyPlayerInfo lobbyPlayer = new LobbyPlayerInfo()

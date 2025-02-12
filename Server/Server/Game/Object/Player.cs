@@ -30,18 +30,9 @@ namespace Server.Game
 
         public void OnLeaveGame()
         {
-            //피가 깎일 때마다 DB에 접근하는게 아니라 게임 종료시에만 db에 최종저장을 해줌
             //DB 연동
-            using (AppDbContext db = new AppDbContext()) //db연동시마다 생성
-            {
-                PlayerDb playerDb = new PlayerDb();
-                playerDb.PlayerDbId = PlayerDbId;
-                playerDb.Hp = Stat.Hp;
-
-                db.Entry(playerDb).State = EntityState.Unchanged;
-                db.Entry(playerDb).Property(nameof(PlayerDb.Hp)).IsModified = true; //db에서 hp변경
-                db.SaveChanges();
-            }
+            //한명이 전부 일을 하는게아니라 transaction한테 일감을 던져준 것
+            DbTransaction.SavePlayerStatus_Step1(this, Room);
         }
     }
 }
