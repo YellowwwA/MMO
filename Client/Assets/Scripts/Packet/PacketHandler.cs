@@ -149,4 +149,14 @@ class PacketHandler
 			Managers.Network.Send(enterGamePacket); //로그인할거라고 패킷 보냄
 		}
 	}
+
+	public static void S_ItemListHandler(PacketSession session, IMessage packet)
+    {
+		S_ItemList itemList = (S_ItemList)packet;
+
+		foreach(ItemInfo item in itemList.Items)
+        {
+			Debug.Log($"{item.TemplateId} : {item.Count}");
+        }
+    }
 }

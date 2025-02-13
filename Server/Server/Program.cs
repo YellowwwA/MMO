@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -34,7 +35,45 @@ namespace Server.Game
 		{
 			ConfigManager.LoadConfig();
 			DataManager.LoadData();
-			//var d = DataManager.StatDict;
+			
+			//TestCode
+			using (AppDbContext db = new AppDbContext())
+            {
+				PlayerDb player = db.Players.FirstOrDefault();
+				if(player != null)
+                {
+					db.Items.Add(new ItemDb()
+					{
+						TemplateId = 1,
+						Count = 1,
+						Slot = 0,
+						Owner = player
+					});
+					db.Items.Add(new ItemDb()
+					{
+						TemplateId = 100,
+						Count = 1,
+						Slot = 1,
+						Owner = player
+					});
+					db.Items.Add(new ItemDb()
+					{
+						TemplateId = 101,
+						Count = 1,
+						Slot = 2,
+						Owner = player
+					});
+					db.Items.Add(new ItemDb()
+					{
+						TemplateId = 200,
+						Count = 10,
+						Slot = 5,
+						Owner = player
+					});
+
+					db.SaveChangesEx();
+				}
+            }
 
 			GameRoom room = RoomManager.Instance.Add(1);
 			TickRoom(room, 50); //50ms마다 실행
