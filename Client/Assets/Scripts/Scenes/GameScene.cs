@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GameScene : BaseScene
 {
+    UI_GameScene _sceneUI;
+
     protected override void Init()
     {
         base.Init();
@@ -13,6 +15,8 @@ public class GameScene : BaseScene
         Managers.Map.LoadMap(1);
 
         Screen.SetResolution(640, 480, false); // 시작 게임화면 크기 설정
+
+        _sceneUI = Managers.UI.ShowSceneUI<UI_GameScene>();
         /*
         for(int i = 0; i<5; i++)
         {
