@@ -166,7 +166,7 @@ namespace Server.Game
                 DataManager.SkillDict.TryGetValue(1, out skillData); //1번스킬의 데이터(ex쿨타임, 데미지)를 가져옴
 
                 // 데미지 판정
-                _target.OnDamaged(this, skillData.damage + Stat.Attack);
+                _target.OnDamaged(this, skillData.damage + TotalAttack);
 
                 // 스킬 사용 Broadcast
                 S_Skill skill = new S_Skill() { Info = new SkillInfo() };

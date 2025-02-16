@@ -41,6 +41,7 @@ namespace Server.DB
         public int TemplateId { get; set; } //데이터시트에서 어떤 아이디인지 구분 (내가 지정)
         public int Count { get; set; }
         public int Slot { get; set; } //인벤토리 내 아이템들의 슬롯 위치 저장, 인덱스 번호를 1~10은 현재 보유아이템 11~20은 창고에 넣은 아이템 등 이렇게 분류도 가능
+        public bool Equipped { get; set; } // 장착여부
 
         [ForeignKey("Owner")]
         public int? OwnerDbId { get; set; } //보유자 없이 땅바닥에 버린 아이템일경우를 대비해 nullable타입으로 ?붙임

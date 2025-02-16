@@ -9,18 +9,13 @@ namespace Server.Game
     {
         public GameObject Owner { get; set; }
 
-        long _nextMoveTick = 0;
-
         public override void Update() //update문이 너무 자주 실행되지 않게 함
         {
             if (Data == null || Data.projectile == null || Owner == null || Room == null)
                 return;
 
-            if (_nextMoveTick >= Environment.TickCount64)
-                return;
-
-            long tick = (long)(1000 / Data.projectile.speed);
-            _nextMoveTick = Environment.TickCount64 + tick;
+            int tick = (int)(1000 / Data.projectile.speed);
+            Room.PushAfter(tick, Update);
 
             Vector2Int destPos = GetFrontCellPos();
             if(Room.Map.CanGo(destPos))
@@ -40,7 +35,7 @@ namespace Server.Game
                 if(target != null) // 벽이 아닌 gameObject와 부딪혔다면 피격판정
                 {
                     //피격 판정
-                    target.OnDamaged(this, Data.damage + Owner.Stat.Attack);
+                    target.OnDamaged(this, Data.damage + Owner.TotalAttack);
                 }
                 //화살 소멸
                 Room.Push(Room.LeaveGame,Id);

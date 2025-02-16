@@ -8,7 +8,7 @@ using Server.Game;
 
 namespace Server.DB
 {
-    public class DbTransaction : JobSerializer
+    public partial class DbTransaction : JobSerializer
     {
         public static DbTransaction Instance { get; } = new DbTransaction();
 
@@ -85,6 +85,9 @@ namespace Server.DB
                 return;
 
             //살짝 문제있음
+            //1)DB에 저장요청
+            //2)DB저장 ok
+            //3)메모리에 적용
             int? slot = player.Inven.GetEmptySlot();
             if (slot == null)
                 return;
