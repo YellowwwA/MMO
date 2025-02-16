@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Google.Protobuf.Protocol;
 using Microsoft.EntityFrameworkCore;
+using Server.Data;
 using Server.Game;
 
 namespace Server.DB
@@ -40,6 +42,7 @@ namespace Server.DB
 
         }
         
+        //Me(GameRoom)
         public static void SavePlayerStatus_Step1(Player player, GameRoom room)
         {
             if (player == null || room == null)
@@ -52,6 +55,8 @@ namespace Server.DB
             Instance.Push<PlayerDb, GameRoom>(SavePlayerStatus_Step2, playerDb, room);
            
         }
+
+        //You(Db)
         public static void SavePlayerStatus_Step2(PlayerDb playerDb, GameRoom room)
         {
             using (AppDbContext db = new AppDbContext()) //db연동시마다 생성
@@ -68,9 +73,59 @@ namespace Server.DB
             }
         }
 
+        //Me
         public static void SavePlayerStatus_Step3(int hp)
         {
             Console.WriteLine($"Hp Saved({hp})");
+        }
+
+        public static void RewardPlayer(Player player, RewardData rewardData, GameRoom room)
+        {
+            if (player == null || rewardData == null || room == null)
+                return;
+
+            //살짝 문제있음
+            int? slot = player.Inven.GetEmptySlot();
+            if (slot == null)
+                return;
+
+            ItemDb itemDb = new ItemDb()
+            {
+                TemplateId = rewardData.itemId,
+                Count = rewardData.count,
+                Slot = slot.Value,
+                OwnerDbId = player.PlayerDbId
+            };
+
+            //You
+            Instance.Push(() =>
+            {
+                using (AppDbContext db = new AppDbContext()) //db연동시마다 생성
+                {
+                    db.Items.Add(itemDb);
+                    bool success = db.SaveChangesEx();
+
+                    if (success)
+                    {
+                        //Me
+                        room.Push(() =>
+                        {
+                            Item newItem = Item.MakeItem(itemDb);
+                            player.Inven.Add(newItem);
+
+                            //Client Noti
+                            {
+                                S_AddItem itemPacket = new S_AddItem();
+                                ItemInfo itemInfo = new ItemInfo();
+                                itemInfo.MergeFrom(newItem.Info);
+                                itemPacket.Items.Add(itemInfo);
+
+                                player.Session.Send(itemPacket);
+                            }
+                        });
+                    }
+                }
+            });
         }
     }
 }

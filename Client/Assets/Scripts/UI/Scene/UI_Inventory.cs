@@ -33,7 +33,6 @@ public class UI_Inventory :UI_Base
             if (item.Slot < 0 || item.Slot >= 20)
                 continue;
             Items[item.Slot].SetItem(item.TemplateId, item.Count); //각 아이템의 슬롯 자리에 이미지를 세팅해줌
-            //Debug.Log("slot : " + item.Slot + " id" + item.TemplateId + " count" + item.Count);
         }
 
 

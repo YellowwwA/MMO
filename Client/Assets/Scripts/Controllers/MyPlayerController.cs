@@ -14,6 +14,8 @@ public class MyPlayerController : PlayerController
 
     protected override void UpdateController()
     {
+        GetUIKeyInput();
+
         switch (State)
         {
             case CreatureState.Idle:
@@ -58,6 +60,25 @@ public class MyPlayerController : PlayerController
     void LateUpdate()
     {   //카메라 플레이어 따라 이동
         Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
+    }
+
+    void GetUIKeyInput()
+    {
+        if(Input.GetKeyDown(KeyCode.I))
+        {
+            UI_GameScene gameSceneUI = Managers.UI.SceneUI as UI_GameScene;
+            UI_Inventory invenUI = gameSceneUI.InvenUI;
+
+            if(invenUI.gameObject.activeSelf) //이미 아이템창이 켜져있다면 끄기
+            {
+                invenUI.gameObject.SetActive(false);
+            }
+            else //꺼져있다면 켜기
+            {
+                invenUI.gameObject.SetActive(true);
+                invenUI.RefreshUI();
+            }
+        }
     }
 
     //키보드 입력 받아 이동 방향 설정
