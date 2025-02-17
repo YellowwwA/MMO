@@ -84,6 +84,21 @@ public class MyPlayerController : PlayerController
                 invenUI.RefreshUI();
             }
         }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            UI_GameScene gameSceneUI = Managers.UI.SceneUI as UI_GameScene;
+            UI_Stat statUI = gameSceneUI.StatUI;
+
+            if (statUI.gameObject.activeSelf) //이미 아이템창이 켜져있다면 끄기
+            {
+                statUI.gameObject.SetActive(false);
+            }
+            else //꺼져있다면 켜기
+            {
+                statUI.gameObject.SetActive(true);
+                statUI.RefreshUI();
+            }
+        }
     }
 
     //키보드 입력 받아 이동 방향 설정
